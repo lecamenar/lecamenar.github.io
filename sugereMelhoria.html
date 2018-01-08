@@ -1,0 +1,127 @@
+<html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="http://pingendo.github.io/pingendo-bootstrap/themes/default/bootstrap.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css">
+    <style>
+      body {
+                                                                padding: 0;
+                                                                margin: 0;
+                                                              }
+                                                              html, body, #map {
+                                                                height: 100%;
+                                                              }
+    </style>
+  </head><body>
+    <div class="navbar navbar-default navbar-static-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-ex-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#"><span>Aplicação Planejamento Urbano - Prefeitura</span></a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-ex-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li class="active" id="sugAresta">
+              <a href="sugereMelhoria.html"><span class="badge"></span>Sugerir Melhoria</a>
+            </li>
+            <li>
+              <a href="solucaoProblema.html">Reportar Solução de Problema</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <h3>Instruções de Uso:</h3>
+            <p>- Clique no mapa para registrar uma melhoria realizada na cidade
+              <br>- Selecione se a melhoria foi realizada na calçada ou no rebaixamento
+              <br>- Descreva a melhoria e clique em Enviar</p>
+          </div>
+        </div>
+        <p>A melhoria foi realizada na:</p>
+        <select>
+          <option value="calcada">Calçada</option>
+          <option value="rebaixamento">Rebaixamento</option>
+        </select>
+        <p>Descrição da melhoria:</p>
+        <input type="text" name="melhoria" size="100" onfocus="this.value='';">
+        <input onclick="deleteMarkers();" type="button" value="Enviar">
+        <p></p>
+      </div>
+      <div>
+        <div class="container">
+          <div id="map"></div>
+          <script>
+            var map;
+      var markers = [];
+
+      function initMap() {
+        var utfpr = {lat: -25.438421, lng: -49.268500};
+
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 16,
+          center: utfpr,
+        });
+
+        // This event listener will call addMarker() when the map is clicked.
+        map.addListener('click', function(event) {
+          addMarker(event.latLng);
+        });
+
+       
+      }
+
+      // Adds a marker to the map and push to the array.
+      function addMarker(location) {
+        var marker = new google.maps.Marker({
+          position: location,
+          map: map
+        });
+        markers.push(marker);
+      }
+
+      // Sets the map on all markers in the array.
+      function setMapOnAll(map) {
+        for (var i = 0; i < markers.length; i++) {
+          markers[i].setMap(map);
+        }
+      }
+
+      // Removes the markers from the map, but keeps them in the array.
+      function clearMarkers() {
+        setMapOnAll(null);
+      }
+
+      // Shows any markers currently in the array.
+      function showMarkers() {
+        setMapOnAll(map);
+      }
+
+      // Deletes all markers in the array by removing references to them.
+      function deleteMarkers() {
+        clearMarkers();
+        markers = [];
+        document.getElementById('melhoria').value='';
+  
+
+      }
+          </script>
+          <script async="" defer="" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDTymwtNdxceo0ussFguukft_qlETKk9Uk&amp;callback=initMap">
+</script>
+        </div>
+      </div>
+    </div>
+  
+
+</body></html>

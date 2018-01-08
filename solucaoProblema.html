@@ -1,0 +1,164 @@
+<html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="http://pingendo.github.io/pingendo-bootstrap/themes/default/bootstrap.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css">
+    <style>
+      body {
+                                                                padding: 0;
+                                                                margin: 0;
+                                                              }
+                                                              html, body, #map {
+                                                                height: 100%;
+                                                              }
+    </style>
+  </head><body>
+    <div class="navbar navbar-default navbar-static-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-ex-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#"><span>Aplicação Planejamento Urbano - Prefeitura</span></a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-ex-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li class="active" id="sugAresta">
+              <a href="sugereMelhoria.html"><span class="badge"></span>Sugerir Melhoria</a>
+            </li>
+            <li class="active">
+              <a href="solucaoProblema.html">Reportar Solução de Problema</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <h3>Instruções de Uso: </h3>
+		  <p> - Clique no marcador para ver detalhes de um problema informado e selecionar um marcador
+			<br>- Descreva a solução do problema e clique em Salvar
+			<br>- Clique no marcador com o botão direito do mouse para confirmar a solução de um problema</p>
+		  
+		  
+		</div>
+      </div>
+      <p>Descrição da solução:</p>
+      <input type="text" name="melhoria" size="100" onfocus="this.value='';">
+      <input onclick="salvar();" type="button" value="Salvar">
+      <p></p>
+    </div>
+    <div class="container">
+      <div id="map"></div>
+      <script type="text/javascript">
+      	var locations = [
+        		['Calçada Irregular', -25.438421, -49.268500, 4],
+        		['Problema no Rebaixamento', -25.437188, -49.269629, 5],
+        		['Buraco na Rua', -25.432213, -49.257521, 3],
+        		['Piso solto', -33.80010128657071, 151.28747820854187, 2],
+          		['Calçada quebrada',-25.433337, -49.275717,1],
+          		['Obras na calçada',-25.435546, -49.278635,6],
+          		['Árvore na calçada',-25.436612, -49.277122,7],
+          		['Calçada Irregular',-25.435711, -49.276060,8],
+          		['Não tem rebaixamento',-25.434129, -49.276980,9],
+          		['Rebaixamento muito alto', -25.434226, -49.279233, 10],
+          		['Calçada irregular', -25.439991, -49.268623, 11],
+          		['Calçada quebrada',-25.440494, -49.267432, 12],
+          		['Não tem rebaixamento',-25.441676, -49.268590,13],
+          		['Calçada com piso quebrado', -25.441589, -49.267614, 14],
+          		['Não tem calçada', -25.436687, -49.268140, 15],
+          		['Rebaixamento irregular', -25.437074, -49.269116, 16],
+          		['Calçada irregular', -25.434709, -49.258779, 17],
+          		['Buraco na calçada',-25.433777, -49.256700, 18],
+          		['Calçada sem condições de andar',-25.434340, -49.258335,19],
+          		['Não tem calçada',-25.436630, -49.273342,20],
+          		['Rebaixamento fora das normas',-25.436605, -49.263688,21],
+          		['Calçada ruim',-25.436084, -49.262579,22],
+          		['Calçada inadequada',-25.438823, -49.282166,23],
+          		['Calçada ruim',-25.438823, -49.282166,24],
+          		['Não tem calçada',-25.439955, -49.276681,25],
+          		['Calçada fora do padrão',-25.434734, -49.276205,26],
+          		['Buraco na calçada',-25.434482, -49.276516,27],
+          		['Não tem rebaixamento',-25.434124, -49.276977,28],
+          		['Calçada pessima, com buracos',-25.432603, -49.276108,29],
+          		['Buraco na calçada',-25.434250, -49.277149,30],
+      ];
+	  
+	  
+	  
+			function initMap() {
+				var position;
+  	
+			  var map = new google.maps.Map(document.getElementById('map'), {
+				zoom: 15,
+				center: new google.maps.LatLng(-25.438421, -49.268500),
+			  });
+		  
+			  var infowindow = new google.maps.InfoWindow();
+		  
+			  var marker, i;
+		  
+			  for (i = 0; i < locations.length; i++) {
+				locations[i][4] = marker = new google.maps.Marker({
+					position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+					map: map
+				});
+				
+				bindMarkerEvents(marker, i);
+				
+				google.maps.event.addListener(marker, 'click', (function(marker, i) {
+					return function() {
+						infowindow.setContent(locations[i][0]);
+						infowindow.open(map, marker);
+						position = i;
+            
+					}
+				})(marker, i));
+			  }
+			}
+
+		/**
+		 * Binds right click event to given marker and invokes a callback function that will remove the marker from map.
+		 * @param {!google.maps.Marker} marker A google.maps.Marker instance that the handler will binded.
+		 */ 
+		var bindMarkerEvents = function(marker, i) {
+			google.maps.event.addListener(marker, "rightclick", function (point) {
+				removeMarker(marker, i);
+			});
+		};	  
+    
+		var removeMarker = function(marker, markerId) {
+			marker.setMap(null);
+		
+			var newMarkers = [];
+		
+			delete locations[markerId];
+			
+			for(var i = 0; i < locations.length; i++) {
+				if(locations[i] != undefined) {
+					newMarkers.push(locations[i]);
+				}
+			}
+
+			locations = newMarkers;
+			document.getElementById('melhoria').value=''
+		};
+		
+		function salvar() {
+        document.getElementById('melhoria').value='';
+		}
+
+	</script>
+      <script async="" defer="" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDTymwtNdxceo0ussFguukft_qlETKk9Uk&amp;callback=initMap">
+</script>
+    </div>
+  
+
+</body></html>
